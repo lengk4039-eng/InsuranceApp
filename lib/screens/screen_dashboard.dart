@@ -1,6 +1,9 @@
-
 import 'package:flutter/material.dart';
 import '../models/policy.dart';
+import '../utils/status_colors.dart';
+import 'file_claim_screen.dart';
+import 'notifications_screen.dart';
+import 'policy_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -10,39 +13,37 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  // Sample policy data
-  final List<InsurancePolicy> policies = [
-    InsurancePolicy(
-      id: 'POL-101',
-      title: 'Comprehensive Auto Cover',
-      category: 'Vehicle',
-      premiumAmount: 120.0,
-      coverageDetails: 'Full collision, theft, and third-party coverage.',
-      status: 'Active',
-    ),
-    InsurancePolicy(
-      id: 'POL-102',
-      title: 'Family Health Guard',
-      category: 'Health',
-      premiumAmount: 250.0,
-      coverageDetails: 'In-patient hospital care and prescription coverage.',
-      status: 'Active',
-    ),
-  ];
- 
   @override
   Widget build(BuildContext context) {
+    final policies = PolicyRepository.instance.policies;
+    final activeCount = policies
+        .where((policy) => policy.status == 'Active')
+        .length;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Insurance Management'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [ 
+          children: [
             // Overview Summary Card
             Card(
               elevation: 4,
@@ -56,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Active Policies',
@@ -67,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '${policies.length} Enrolled',
+                          '$activeCount Enrolled',
                           style: const TextStyle(
                             fontSize: 20,
                             color: Colors.deepPurple,
@@ -78,7 +79,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
-                        // TODO: Navigate to File Claim screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FileClaimScreen(),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.add_alert),
                       label: const Text('File Claim'),
@@ -113,7 +119,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Icon(
                           policy.category == 'Vehicle'
                               ? Icons.directions_car
-                              : Icons.health_and_safety,
+                              : policy.category == 'Health'
+                              ? Icons.health_and_safety
+                              : Icons.favorite,
                           color: Colors.deepPurple,
                         ),
                       ),
@@ -126,8 +134,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           policy.status,
                           style: const TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: Colors.green,
+                        backgroundColor: statusColor(policy.status),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PolicyDetailScreen(policy: policy),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
