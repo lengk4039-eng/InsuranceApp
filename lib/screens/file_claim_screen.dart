@@ -82,7 +82,7 @@ class _FileClaimScreenState extends State<FileClaimScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<InsurancePolicy>(
-                value: _selectedPolicy,
+                initialValue: _selectedPolicy,
                 decoration: const InputDecoration(
                   labelText: 'Policy',
                   border: OutlineInputBorder(),
@@ -104,7 +104,7 @@ class _FileClaimScreenState extends State<FileClaimScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedClaimType,
+                initialValue: _selectedClaimType,
                 decoration: const InputDecoration(
                   labelText: 'Claim Type',
                   border: OutlineInputBorder(),

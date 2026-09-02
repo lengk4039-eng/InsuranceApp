@@ -11,5 +11,9 @@ void main() {
 
     expect(find.text('Insurance App'), findsOneWidget);
     expect(find.byIcon(Icons.shield), findsOneWidget);
+
+    // Let the splash screen's navigation timer fire and settle so it
+    // doesn't leak a pending Timer past the end of the test.
+    await tester.pumpAndSettle(const Duration(seconds: 3));
   });
 }
